@@ -7,30 +7,21 @@
 //
 
 import UIKit
-import QuartzCore
 import SceneKit
 
-class GameViewController: UIViewController {
+class Game: SCNScene {
     
     var sphereNode:SCNNode?
     var sphereNode2:SCNNode?
     var sphereNode3:SCNNode?
-    var scene:SCNScene?
     
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.initialize()
-    }
     
     func initialize(){
-        self.scene = SCNScene()
         
         self.createCameraAndLights()
         
         let sphereHolder = SCNNode()
-        self.scene?.rootNode.addChildNode(sphereHolder)
+        self.rootNode.addChildNode(sphereHolder)
         
         self.sphereNode = self.createSphere(1,pos: SCNVector3(x: -2.5, y: 0.0, z: 12))
         sphereHolder.addChildNode(self.sphereNode!)
@@ -45,18 +36,15 @@ class GameViewController: UIViewController {
         
         
         var titleNode = self.createText()
-        self.scene?.rootNode.addChildNode(titleNode)
+        self.rootNode.addChildNode(titleNode)
         
-        
-        self.createSceneView()
-
     }
     
-    func createCameraAndLights(){
+   func createCameraAndLights(){
         // create and add a camera to the scene
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        self.scene?.rootNode.addChildNode(cameraNode)
+        self.rootNode.addChildNode(cameraNode)
         
         // place the camera
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
@@ -66,44 +54,16 @@ class GameViewController: UIViewController {
         lightNode.light = SCNLight()
         lightNode.light!.type = SCNLightTypeOmni
         lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
-        self.scene?.rootNode.addChildNode(lightNode)
+        self.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = SCNLightTypeAmbient
         ambientLightNode.light!.color = UIColor.lightGrayColor()
-        self.scene?.rootNode.addChildNode(ambientLightNode)
+        self.rootNode.addChildNode(ambientLightNode)
     }
     
-    func createSceneView(){
-        // retrieve the SCNView
-        let scnView = self.view as SCNView
-        
-        // set the scene to the view
-        scnView.scene = self.scene
-        
-        scnView.autoenablesDefaultLighting = true
-        
-        // allows the user to manipulate the camera
-        scnView.allowsCameraControl = false
-        
-        // show statistics such as fps and timing information
-        scnView.showsStatistics = true
-        
-        // configure the view
-        scnView.backgroundColor = UIColor.blackColor()
-        
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: "handleTap:")
-        let gestureRecognizers = NSMutableArray()
-        gestureRecognizers.addObject(tapGesture)
-        if let existingGestureRecognizers = scnView.gestureRecognizers {
-            gestureRecognizers.addObjectsFromArray(existingGestureRecognizers)
-        }
-        scnView.gestureRecognizers = gestureRecognizers
-
-    }
     
     func createText() -> SCNNode{
         let titleText = SCNText(string: "Ready?", extrusionDepth: 0.8)
@@ -155,7 +115,7 @@ class GameViewController: UIViewController {
         self.sphereNode?.runAction(SCNAction.sequence([wait1,posAction1]))
         self.sphereNode2?.runAction(SCNAction.sequence([wait2,posAction2]))
         self.sphereNode3?.runAction(SCNAction.sequence([wait3,posAction3]))
-
+        
     }
     
     func createSphere(index:Int, pos:SCNVector3) -> SCNNode {
@@ -172,63 +132,13 @@ class GameViewController: UIViewController {
         return sphereNode
     }
     
-    func handleTap(gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as SCNView
+    
+    override init() {
+        super.init()
+        self.initialize()
         
-        // check what nodes are tapped
-        let p = gestureRecognize.locationInView(scnView)
-        if let hitResults = scnView.hitTest(p, options: nil) {
-            // check that we clicked on at least one object
-            if hitResults.count > 0 {
-                // retrieved the first clicked object
-                let result: AnyObject! = hitResults[0]
-                
-                // get its material
-                let material = result.node!.geometry!.firstMaterial!
-                
-                println(result.node.name)
-                
-                // highlight it
-                SCNTransaction.begin()
-                SCNTransaction.setAnimationDuration(0.5)
-                
-                // on completion - unhighlight
-                SCNTransaction.setCompletionBlock {
-                    SCNTransaction.begin()
-                    SCNTransaction.setAnimationDuration(0.5)
-                    
-                    material.emission.contents = UIColor.blackColor()
-                    
-                    SCNTransaction.commit()
-                }
-                
-                material.emission.contents = UIColor.redColor()
-                
-                SCNTransaction.commit()
-            }
-        }
     }
-    
-    override func shouldAutorotate() -> Bool {
-        return true
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
-    
-    override func prefersStatusBarHidden() -> Bool {
-        return true
-    }
-    
-    override func supportedInterfaceOrientations() -> Int {
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-            return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)
-        } else {
-            return Int(UIInterfaceOrientationMask.All.rawValue)
-        }
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
-    }
-    
 }
