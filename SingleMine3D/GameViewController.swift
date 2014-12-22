@@ -24,6 +24,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     var canUseGameCenter:Bool?
     var leaderboardIdentifier:String?
     var adBannerView:ADBannerView!
+    var game:Game?
     
     @IBOutlet weak var levelLabel: UILabel!
     @IBOutlet weak var highscoreLabel: UILabel!
@@ -36,10 +37,12 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         super.viewDidLoad()
         
         //let scnView = self.view as SCNView
-        let scene = Game()
+        self.game = Game() as Game
         
         
-        self.scnView?.scene = scene
+        
+        
+        self.scnView?.scene = self.game
         self.scnView?.backgroundColor = UIColor.blackColor()
         self.scnView?.autoenablesDefaultLighting = true
         //self.scnView?.allowsCameraControl = true
@@ -68,6 +71,14 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         createRandom()
     }
     
+    @IBAction func showLeaderboard(sender: UIButton) {
+        var gameCenterVC:GKGameCenterViewController = GKGameCenterViewController()
+        gameCenterVC.gameCenterDelegate = self
+        self.presentViewController(gameCenterVC, animated: true, completion: { () -> Void in
+            
+        })
+    }
+    
     
     func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController!){
         self.dismissViewControllerAnimated(true, completion: { () -> Void in
@@ -76,23 +87,27 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     }
     
     func win(){
-        //self.messageLabel.text = "CONGRATS!"
+        self.game?.updateText("CONGRATS!, GO AGAIN!", color:UIColor.whiteColor())
+        
         self.currentLevel++
         
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
     }
     
     func loose(){
-        //self.messageLabel.text = "GAME OVER!"
-        //self.messageLabel.textColor = UIColor.redColor()
+        
+        self.game?.updateText("GAME OVER!", color:UIColor.redColor())
+        
+        
         self.currentLevel = 0;
         
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
     }
     
     func playAgain(){
-        //self.messageLabel.text = "PLAY AGAIN!"
-        //self.messageLabel.textColor = UIColor.blackColor()
+        
+        self.game?.updateText("PLAY AGAIN!", color:UIColor.whiteColor())
+        
         
         //button1?.enabled = true;
         //button2?.enabled = true;
@@ -221,9 +236,6 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     }
 
     func handleTap(gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        //let scnView = self.view as SCNView
-        
         // check what nodes are tapped
         let p = gestureRecognize.locationInView(scnView)
         if let hitResults = self.scnView?.hitTest(p, options: nil) {
@@ -232,68 +244,54 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
                 // retrieved the first clicked object
                 let result: AnyObject! = hitResults[0]
                 
-                // get its material
-                let material = result.node!.geometry!.firstMaterial!
+                self.buttonWasTapped(result.node!)
                 
-                //println(result.node.name)
                 
-                self.buttonWasTapped(result.node.name!)
                 
-                // highlight it
-                SCNTransaction.begin()
-                SCNTransaction.setAnimationDuration(0.5)
-                
-                // on completion - unhighlight
-                SCNTransaction.setCompletionBlock {
-                    SCNTransaction.begin()
-                    SCNTransaction.setAnimationDuration(0.5)
-                    
-                    material.emission.contents = UIColor.blackColor()
-                    
-                    SCNTransaction.commit()
-                }
-                
-                material.emission.contents = UIColor.redColor()
-                
-                SCNTransaction.commit()
             }
         }
     }
     
-    func buttonWasTapped(buttonName:String){
+    
+    
+    func buttonWasTapped(node:SCNNode){
+        var buttonName = node.name
+        var winOrLoose = false
+        
         if(buttonName == "sphere1"){
-            //println("Button 1")
             if(randomNum == 1){
-                //button1?.backgroundColor = UIColor.greenColor()
+                winOrLoose = true
                 win()
             }else{
-                //button1?.backgroundColor = UIColor.redColor()
+                winOrLoose = false
                 loose()
             }
             
         }
         
         if(buttonName == "sphere2"){
-            //println("Button 2")
             if(randomNum == 2){
-                //button2?.backgroundColor = UIColor.greenColor()
+                winOrLoose = true
                 win()
             }else{
-                //button2?.backgroundColor = UIColor.redColor()
+                winOrLoose = false
                 loose()
             }
         }
         
         if(buttonName == "sphere3"){
-            //println("Button 3")
             if(randomNum == 3){
-                //button3?.backgroundColor = UIColor.greenColor()
+                winOrLoose = true
                 win()
             }else{
-                //button3?.backgroundColor = UIColor.redColor()
+                winOrLoose = false
                 loose()
             }
         }
+        
+        
+        //animate and flash color red if loose and green if won
+        self.game?.animateNode(node, win: winOrLoose)
         
         createRandom()
         updateHighScore()

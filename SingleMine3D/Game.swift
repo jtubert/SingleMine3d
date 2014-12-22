@@ -14,6 +14,8 @@ class Game: SCNScene {
     var sphereNode:SCNNode?
     var sphereNode2:SCNNode?
     var sphereNode3:SCNNode?
+    var titleText:SCNText?
+    var titleNode:SCNNode?
     
     
     func initialize(){
@@ -35,12 +37,34 @@ class Game: SCNScene {
         self.animateSpheres()
         
         
-        var titleNode = self.createText()
-        self.rootNode.addChildNode(titleNode)
+        self.titleNode = self.createText()
+        self.rootNode.addChildNode(self.titleNode!)
+        
+        //self.updateText("xxxx")
         
     }
     
-   func createCameraAndLights(){
+    func updateText(s:String, color:UIColor){
+        self.titleText?.string = s
+        self.titleText?.firstMaterial?.diffuse.contents  = color
+        
+        var minVec = UnsafeMutablePointer<SCNVector3>.alloc(0)
+        var maxVec = UnsafeMutablePointer<SCNVector3>.alloc(1)
+        if (self.titleNode?.getBoundingBoxMin(minVec, max: maxVec) != nil) {
+            let distance = SCNVector3(
+                x: maxVec.memory.x - minVec.memory.x,
+                y: maxVec.memory.y - minVec.memory.y,
+                z: maxVec.memory.z - minVec.memory.z)
+            
+            self.titleNode?.pivot = SCNMatrix4MakeTranslation(distance.x / 2, distance.y / 2, distance.z / 2)
+            minVec.dealloc(0)
+            maxVec.dealloc(1)
+        }
+
+        
+    }
+    
+    func createCameraAndLights(){
         // create and add a camera to the scene
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
@@ -66,13 +90,20 @@ class Game: SCNScene {
     
     
     func createText() -> SCNNode{
-        let titleText = SCNText(string: "Ready?", extrusionDepth: 0.8)
-        titleText.flatness = 0.1
+        self.titleText = SCNText(string: "Ready?", extrusionDepth: 0.8)
+        self.titleText?.flatness = 0.1
+        
+        
+        
+        
+        
         //titleText.containerFrame = CGRect(x: 100, y: 10, width: 200, height: 50)
-        titleText.font = UIFont(name: "Dosis-SemiBold", size: 10)
-        titleText.firstMaterial?.diffuse.contents  = UIColor.whiteColor()
-        titleText.firstMaterial?.doubleSided = true
-        let titleNode = SCNNode(geometry: titleText)
+        self.titleText?.font = UIFont(name: "Dosis-SemiBold", size: 10)
+        self.titleText?.firstMaterial?.diffuse.contents  = UIColor.whiteColor()
+        self.titleText?.firstMaterial?.doubleSided = true
+        let titleNode = SCNNode(geometry: self.titleText!)
+        
+        
         
         var minVec = UnsafeMutablePointer<SCNVector3>.alloc(0)
         var maxVec = UnsafeMutablePointer<SCNVector3>.alloc(1)
@@ -93,7 +124,44 @@ class Game: SCNScene {
         
         titleNode.runAction(SCNAction.repeatActionForever(SCNAction.rotateByX(0, y: 2, z: 0, duration: 1)))
         
+        
+        
         return titleNode
+    }
+    
+    
+    func animateNode(node:SCNNode, win:Bool){
+        var posAction1 = SCNAction.moveTo(SCNVector3(x: node.position.x, y: node.position.y, z: -5.0), duration: 0.5)
+        var posAction2 = SCNAction.moveTo(SCNVector3(x: node.position.x, y: node.position.y, z: 0), duration: 0.5)
+        node.runAction(SCNAction.sequence([posAction1,posAction2]))
+        
+        // get its material
+        let material = node.geometry!.firstMaterial!
+        
+        
+        
+        // highlight it
+        SCNTransaction.begin()
+        SCNTransaction.setAnimationDuration(0.5)
+        
+        // on completion - unhighlight
+        SCNTransaction.setCompletionBlock {
+            SCNTransaction.begin()
+            SCNTransaction.setAnimationDuration(0.5)
+            
+            material.emission.contents = UIColor.blackColor()
+            
+            SCNTransaction.commit()
+        }
+        
+        if(win == true){
+            material.emission.contents = UIColor.greenColor()
+        }else{
+            material.emission.contents = UIColor.redColor()
+        }
+        
+        
+        SCNTransaction.commit()
     }
     
     func animateSpheres(){
@@ -115,6 +183,8 @@ class Game: SCNScene {
         self.sphereNode?.runAction(SCNAction.sequence([wait1,posAction1]))
         self.sphereNode2?.runAction(SCNAction.sequence([wait2,posAction2]))
         self.sphereNode3?.runAction(SCNAction.sequence([wait3,posAction3]))
+        
+        //self.sphereNode3?.runA
         
     }
     
