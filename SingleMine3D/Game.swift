@@ -16,23 +16,24 @@ class Game: SCNScene {
     var sphereNode3:SCNNode?
     var titleText:SCNText?
     var titleNode:SCNNode?
+    var sphereHolder:SCNNode?
     
     
     func initialize(){
         
         self.createCameraAndLights()
         
-        let sphereHolder = SCNNode()
-        self.rootNode.addChildNode(sphereHolder)
+        self.sphereHolder = SCNNode()
+        self.rootNode.addChildNode(self.sphereHolder!)
         
         self.sphereNode = self.createSphere(1,pos: SCNVector3(x: -2.5, y: 0.0, z: 12))
-        sphereHolder.addChildNode(self.sphereNode!)
+        self.sphereHolder?.addChildNode(self.sphereNode!)
         
         self.sphereNode2 = self.createSphere(2,pos: SCNVector3(x: 0, y: 0.0, z: -12.0))
-        sphereHolder.addChildNode(self.sphereNode2!)
+        self.sphereHolder?.addChildNode(self.sphereNode2!)
         
         self.sphereNode3 = self.createSphere(3,pos: SCNVector3(x: 2.5, y: 0.0, z: 12.0))
-        sphereHolder.addChildNode(self.sphereNode3!)
+        self.sphereHolder?.addChildNode(self.sphereNode3!)
         
         self.animateSpheres()
         
@@ -60,6 +61,9 @@ class Game: SCNScene {
             minVec.dealloc(0)
             maxVec.dealloc(1)
         }
+        
+        var r = CGFloat(360/180.0 * M_PI)
+        self.titleNode?.runAction(SCNAction.rotateByX(0, y: r, z: 0, duration: 0.5))
 
         
     }
@@ -122,7 +126,9 @@ class Game: SCNScene {
         
         titleNode.scale = SCNVector3Make(0.1, 0.1, 0.1)
         
-        titleNode.runAction(SCNAction.repeatActionForever(SCNAction.rotateByX(0, y: 2, z: 0, duration: 1)))
+        //titleNode.runAction(SCNAction.repeatActionForever(SCNAction.rotateByX(0, y: 2, z: 0, duration: 1)))
+        
+        
         
         
         
@@ -182,9 +188,16 @@ class Game: SCNScene {
         var wait3 = SCNAction.waitForDuration(1.5)
         self.sphereNode?.runAction(SCNAction.sequence([wait1,posAction1]))
         self.sphereNode2?.runAction(SCNAction.sequence([wait2,posAction2]))
-        self.sphereNode3?.runAction(SCNAction.sequence([wait3,posAction3]))
+        //self.sphereNode3?.runAction(SCNAction.sequence([wait3,posAction3]))
         
-        //self.sphereNode3?.runA
+        self.sphereNode3?.runAction(SCNAction.sequence([wait3,posAction3]), completionHandler: { () -> Void in
+            //
+            var r = CGFloat(360/180.0 * M_PI)
+            self.sphereHolder?.runAction(SCNAction.rotateByX(0, y:r, z: 0, duration: 1));
+            println("xxx")
+        })
+        
+        
         
     }
     

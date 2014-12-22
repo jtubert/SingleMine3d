@@ -67,6 +67,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         //self.instructionsLabel.font =  UIFont(name: "Dosis-SemiBold", size: 14)
         
         self.loadAds()
+        
         self.authGameCenter()
         createRandom()
     }
