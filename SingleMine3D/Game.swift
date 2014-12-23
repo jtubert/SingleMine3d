@@ -64,6 +64,9 @@ class Game: SCNScene {
         
         var r = CGFloat(360/180.0 * M_PI)
         self.titleNode?.runAction(SCNAction.rotateByX(0, y: r, z: 0, duration: 0.5))
+        //self.titleNode?.runAction(SCNAction.scaleTo(0.3, duration: 0.5))
+        
+        
 
         
     }
@@ -194,10 +197,32 @@ class Game: SCNScene {
             //
             var r = CGFloat(360/180.0 * M_PI)
             self.sphereHolder?.runAction(SCNAction.rotateByX(0, y:r, z: 0, duration: 1));
-            println("xxx")
+            //println("xxx")
         })
         
+        /*
+        var numberOfItems = 3
+        let radius: Double = 30.0
+        var x: Double = 0.0
+        var z: Double = radius
+        let theta: Double = (M_PI) / Double(numberOfItems / 2)
+        let incrementalY: Double = (M_PI) / Double(numberOfItems) * 2
         
+        //self.sphereHolder?.position = SCNVector3(x: 0, y: 4, z: 0)
+        
+        for index in 1...numberOfItems {
+        
+            x = radius * sin(Double(index) * theta)
+            z = radius * cos(Double(index) * theta)
+            
+            let node = self.sphereHolder?.childNodes[index-1] as SCNNode
+            //let node = SCNNode(geometry: _geometry)
+            node.position = SCNVector3(x: Float(x), y: 0, z:Float(z))
+            let rotation = Float(incrementalY) * Float(index)
+            node.rotation = SCNVector4(x: 0, y: 1, z: 0, w: rotation)
+        }
+        
+       */ 
         
     }
     

@@ -30,7 +30,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     @IBOutlet weak var highscoreLabel: UILabel!
     @IBOutlet weak var randonLabel: UILabel!
     
-    @IBOutlet weak var scnView: SCNView?
+    var scnView: SCNView?
     
     
     override func viewDidLoad() {
@@ -40,12 +40,15 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         self.game = Game() as Game
         
         
-        
+        self.scnView = SCNView()
+        self.scnView?.frame = self.view.frame
         
         self.scnView?.scene = self.game
         self.scnView?.backgroundColor = UIColor.blackColor()
         self.scnView?.autoenablesDefaultLighting = true
         //self.scnView?.allowsCameraControl = true
+        
+        self.view.insertSubview(self.scnView!, atIndex: 0)
         
         // add a tap gesture recognizer
         let tapGesture = UITapGestureRecognizer(target: self, action: "handleTap:")
