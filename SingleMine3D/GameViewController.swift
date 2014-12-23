@@ -60,14 +60,10 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         self.scnView?.gestureRecognizers = gestureRecognizers
         
         
-        //self.messageLabel.text = "READY?"
-        //self.messageLabel.font = UIFont(name: "Dosis-SemiBold", size: 16)
         self.highscoreLabel.text = "HIGHSCORE: " + String(self.savedHighestLevel)
         self.highscoreLabel.font = UIFont(name: "Dosis-SemiBold", size: 14)
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
         self.levelLabel.font = UIFont(name: "Dosis-SemiBold", size: 14)
-        //self.welcomeLabel.font =  UIFont(name: "Dosis-SemiBold", size: 16)
-        //self.instructionsLabel.font =  UIFont(name: "Dosis-SemiBold", size: 14)
         
         self.loadAds()
         
@@ -83,7 +79,6 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         })
     }
     
-    
     func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController!){
         self.dismissViewControllerAnimated(true, completion: { () -> Void in
             //do nothing
@@ -92,33 +87,23 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     
     func win(){
         self.game?.updateText("CONGRATS!, GO AGAIN!", color:UIColor.whiteColor())
-        
         self.currentLevel++
-        
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
     }
     
     func loose(){
-        
         self.game?.updateText("GAME OVER!", color:UIColor.redColor())
-        
-        
         self.currentLevel = 0;
-        
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
     }
     
     func playAgain(){
-        
         self.game?.updateText("PLAY AGAIN!", color:UIColor.whiteColor())
-        
-        
         //button1?.enabled = true;
         //button2?.enabled = true;
         //button3?.enabled = true;
     }
 
-    
     var savedHighestLevel : Int {
         get {
             var returnValue: Int? = NSUserDefaults.standardUserDefaults().objectForKey("savedHighestLevel") as? Int
@@ -150,7 +135,6 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     }
     
     func getHighScore(){
-        
         var leaderboard:GKLeaderboard = GKLeaderboard()
         leaderboard.identifier = self.leaderboardIdentifier
         
@@ -162,9 +146,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
                 self.updateScore(score)
                 self.highscoreLabel.text = "HIGHSCORE: " + String(score)
             }
-            
         }
-        
     }
     
     func authGameCenter(){
@@ -249,14 +231,9 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
                 let result: AnyObject! = hitResults[0]
                 
                 self.buttonWasTapped(result.node!)
-                
-                
-                
             }
         }
     }
-    
-    
     
     func buttonWasTapped(node:SCNNode){
         var buttonName = node.name
