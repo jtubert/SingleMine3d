@@ -17,6 +17,7 @@
 		1D555A241A46A2BD00CE1C08 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D555A231A46A2BD00CE1C08 /* iAd.framework */; };
 		1D555A261A46A2C500CE1C08 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D555A251A46A2C500CE1C08 /* GameKit.framework */; };
 		1D555A281A46A5AD00CE1C08 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D555A271A46A5AD00CE1C08 /* Game.swift */; };
+		1D7AB0051A4A646E000BD596 /* SimonSays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7AB0041A4A646E000BD596 /* SimonSays.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		1D555A231A46A2BD00CE1C08 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		1D555A251A46A2C500CE1C08 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		1D555A271A46A5AD00CE1C08 /* Game.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
+		1D7AB0041A4A646E000BD596 /* SimonSays.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimonSays.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 				1D555A0A1A469A0D00CE1C08 /* LaunchScreen.xib */,
 				1D5559FD1A469A0D00CE1C08 /* Supporting Files */,
 				1D555A271A46A5AD00CE1C08 /* Game.swift */,
+				1D7AB0041A4A646E000BD596 /* SimonSays.swift */,
 			);
 			path = SingleMine3D;
 			sourceTree = "<group>";
@@ -228,6 +231,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D7AB0051A4A646E000BD596 /* SimonSays.swift in Sources */,
 				1D555A041A469A0D00CE1C08 /* GameViewController.swift in Sources */,
 				1D555A281A46A5AD00CE1C08 /* Game.swift in Sources */,
 				1D555A001A469A0D00CE1C08 /* AppDelegate.swift in Sources */,

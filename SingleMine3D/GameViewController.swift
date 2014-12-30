@@ -1,6 +1,6 @@
 //
 //  GameViewController.swift
-//  game2
+//  SingleMine3D
 //
 //  Created by John Tubert on 12/19/14.
 //  Copyright (c) 2014 John Tubert. All rights reserved.
@@ -24,21 +24,24 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     var canUseGameCenter:Bool?
     var leaderboardIdentifier:String?
     var adBannerView:ADBannerView!
-    var game:Game?
+    var game:SimonSays?
     
     @IBOutlet weak var levelLabel: UILabel!
     @IBOutlet weak var highscoreLabel: UILabel!
-    @IBOutlet weak var randonLabel: UILabel!
+    @IBOutlet weak var startAgainButton: UIButton!
     
     var scnView: SCNView?
+    var movesArray:[Int] = []
     
+    var gameActive:Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //let scnView = self.view as SCNView
-        self.game = Game() as Game
+        self.gameActive = false
         
+        //self.game = Game() as Game
+        self.game = SimonSays() as SimonSays
         
         self.scnView = SCNView()
         self.scnView?.frame = self.view.frame
@@ -65,10 +68,18 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
         self.levelLabel.font = UIFont(name: "Dosis-SemiBold", size: 14)
         
+        startAgainButton.hidden = false
+        
         self.loadAds()
         
         self.authGameCenter()
-        createRandom()
+        //createRandom()
+        
+        //animationSequence()
+    }
+    
+    @IBAction func startAgain(sender: UIButton) {
+        self.playAgain(true)
     }
     
     @IBAction func showLeaderboard(sender: UIButton) {
@@ -86,22 +97,57 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     }
     
     func win(){
-        self.game?.updateText("CONGRATS!, GO AGAIN!", color:UIColor.whiteColor())
+        self.game?.updateText("CONGRATS!", color:UIColor.whiteColor())
         self.currentLevel++
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
+        
+        self.game?.looseAnimation(true)
+        
+        animationSequence()
+        
+        
     }
     
     func loose(){
         self.game?.updateText("GAME OVER!", color:UIColor.redColor())
         self.currentLevel = 0;
         self.levelLabel.text = "LEVEL: " + String(self.currentLevel)
+        
+        startAgainButton.hidden = false
+        
+        self.game?.looseAnimation(false)
+        
+        self.gameActive = false
+        
     }
     
-    func playAgain(){
-        self.game?.updateText("PLAY AGAIN!", color:UIColor.whiteColor())
-        //button1?.enabled = true;
-        //button2?.enabled = true;
-        //button3?.enabled = true;
+    func playAgain(firstTime:Bool){
+        if(firstTime == true){
+            self.game?.updateText("PAY ATTENTION!", color:UIColor.whiteColor())
+        }else{
+            self.game?.updateText("PLAY AGAIN!", color:UIColor.whiteColor())
+        }
+        
+        self.gameActive = true
+        
+        startAgainButton.hidden = true
+        self.currentLevel = 0;
+        animationSequence()
+        
+        
+    }
+    
+    func animationSequence(){
+        
+        //self.playAgain()
+        
+        self.movesArray = []
+        
+        self.game?.startOver()
+        
+        for i in 0...self.currentLevel {
+            NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval(i+1), target: self.game!, selector:  Selector("randomAnimationSequence"), userInfo: nil, repeats: false)
+        }
     }
 
     var savedHighestLevel : Int {
@@ -131,7 +177,7 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
     func createRandom(){
         randomNum = arc4random_uniform(3) + 1
         var str:Int = Int(randomNum!)
-        self.randonLabel.text = String(str)
+        //self.randonLabel.text = String(str)
     }
     
     func getHighScore(){
@@ -230,51 +276,46 @@ class GameViewController: UIViewController, GKGameCenterControllerDelegate, ADBa
                 // retrieved the first clicked object
                 let result: AnyObject! = hitResults[0]
                 
-                self.buttonWasTapped(result.node!)
+                if(self.gameActive == true && self.game?.gameActive == true){
+                    self.buttonWasTapped(result.node!)
+                }
+                
+                
             }
         }
     }
     
+    
+    func checkMoves() -> Bool{
+        if(self.movesArray[self.movesArray.count-1] != self.game?.movesArray[self.movesArray.count-1]){
+            return false
+        }else{
+            return true
+        }
+
+    }
+    
     func buttonWasTapped(node:SCNNode){
         var buttonName = node.name
-        var winOrLoose = false
+        var splitted: [String] = buttonName!.componentsSeparatedByString("sphere")
+        var buttonNum = (splitted[1] as String).toInt()
+        self.movesArray.append(buttonNum!)
         
-        if(buttonName == "sphere1"){
-            if(randomNum == 1){
-                winOrLoose = true
-                win()
-            }else{
-                winOrLoose = false
-                loose()
-            }
-            
+        var winOrLoose = self.checkMoves()
+        
+        if(winOrLoose == false){
+            self.loose()
         }
         
-        if(buttonName == "sphere2"){
-            if(randomNum == 2){
-                winOrLoose = true
-                win()
-            }else{
-                winOrLoose = false
-                loose()
-            }
+        if(winOrLoose == true && self.movesArray.count == self.game?.movesArray.count){
+            self.win()
         }
-        
-        if(buttonName == "sphere3"){
-            if(randomNum == 3){
-                winOrLoose = true
-                win()
-            }else{
-                winOrLoose = false
-                loose()
-            }
-        }
-        
         
         //animate and flash color red if loose and green if won
         self.game?.animateNode(node, win: winOrLoose)
         
-        createRandom()
+        
+        //createRandom()
         updateHighScore()
     }
     
